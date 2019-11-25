@@ -1,0 +1,32 @@
+{
+  "name": "kissdigital-com/apple-sign-in-client-secret-generator",
+  "description": "PHP package for generating 'client secret' for Sign In with Apple",
+  "keywords": ["php", "sign-in-with-apple", "apple", "client-secret"],
+  "type": "package",
+  "license": "mit",
+  "authors": [
+    {
+      "name": "Maciej Płocki",
+      "email": "maciej.plocki@kissdigital.com",
+      "role": "Author"
+    },
+    {
+      "name": "Paweł Pyrczak",
+      "email": "pawel.pyrczak@kissdigital.com",
+      "role": "Contributor"
+    }
+  ],
+  "support": {
+    "email": "github@kissdigital.com"
+  },
+  "require": {
+    "php": "^7.2",
+    "web-token/jwt-framework": "^2.1"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Kissdigitalcom\\AppleSignIn\\": "src/"
+    }
+  }
+}
