@@ -4,6 +4,7 @@
   "keywords": ["php", "sign-in-with-apple", "apple", "client-secret"],
   "type": "package",
   "license": "mit",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Maciej Płocki",
@@ -24,6 +25,7 @@
     "web-token/jwt-framework": "^2.1"
   },
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "Kissdigitalcom\\AppleSignIn\\": "src/"
