@@ -14,6 +14,8 @@ use Jose\Component\Signature\Serializer\CompactSerializer;
  */
 class ClientSecret
 {
+    const DEFAULT_TTL = 15552000;
+
     /**
      * @var string
      */
@@ -30,19 +32,14 @@ class ClientSecret
     private $keyId;
 
     /**
-     * @var null|string
+     * @var string
      */
     private $privateKeyContent;
 
     /**
-     * @var null|string
-     */
-    private $privateKeyPath;
-
-    /**
      * @var int time to live for token
      */
-    private $ttl = 15552000;
+    private $ttl;
 
     /**
      * ClientSecret constructor.
@@ -50,27 +47,42 @@ class ClientSecret
      * @param string $clientId
      * @param string $teamId
      * @param string $keyId
-     * @param string|null $certPath
+     * @param string $privateKeyContent
+     * @param int|null $ttl
      */
-    public function __construct(string $clientId, string $teamId, string $keyId, string $certPath)
+    private function __construct(string $clientId, string $teamId, string $keyId, string $privateKeyContent, ?int $ttl = null)
     {
         $this->clientId = $clientId;
         $this->teamId = $teamId;
         $this->keyId = $keyId;
-        $this->privateKeyPath = $certPath;
+        $this->privateKeyContent = $privateKeyContent;
+        $this->ttl = $ttl ?? self::DEFAULT_TTL;
     }
 
     /**
-     * Sets a time to live in seconds
-     *
-     * @param int $ttl
-     * @return $this
+     * @param string $clientId
+     * @param string $teamId
+     * @param string $keyId
+     * @param string $certPath
+     * @return ClientSecret
      */
-    public function ttl(int $ttl): self
+    public static function createFromPrivateKeyPath(string $clientId, string $teamId, string $keyId, string $certPath): self
     {
-        $this->ttl = $ttl;
+        $certContent = \file_get_contents($certPath);
+        return new self($clientId, $teamId, $keyId, $certContent);
+    }
 
-        return $this;
+
+    /**
+     * @param string $clientId
+     * @param string $teamId
+     * @param string $keyId
+     * @param string $certContent
+     * @return ClientSecret
+     */
+    public static function createFromPrivateKeyContent(string $clientId, string $teamId, string $keyId, string $certContent): self
+    {
+        return new self($clientId, $teamId, $keyId, $certContent);
     }
 
     /**
@@ -99,15 +111,7 @@ class ClientSecret
      */
     private function generatePrivateECKey(): JWK
     {
-        if ($this->privateKeyContent) {
-            $content = $this->privateKeyContent;
-        } elseif ($this->privateKeyPath) {
-            $content = \file_get_contents($this->privateKeyPath);
-        } else {
-            throw new \InvalidArgumentException('Unable to find private key.');
-        }
-
-        return JWKFactory::createFromKey($content, null, [
+        return JWKFactory::createFromKey($this->privateKeyContent, null, [
             'kid' => $this->keyId,
             'alg' => 'ES256',
         ]);
